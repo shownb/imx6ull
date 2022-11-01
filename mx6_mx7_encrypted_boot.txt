@@ -5,16 +5,9 @@
 1. HABv4 Encrypted Boot process
 -------------------------------
 
-This document describes a step-by-step procedure on how to encrypt and
-sign an U-Boot image. It is assumed that the reader is familiar
-with basic HAB concepts and has already followed the mx6_mx7_secure_boot.txt
-guide and got a working closed device.
+本文件描述了一步步的过程：说明如何加密和签署U-Boot镜像。假设读者熟悉基本的HAB概念，并且已经按照熟悉基本的HAB概念，并且已经按照mx6_mx7_secure_boot.txt 指南，并得到了一个工作的闭合设备。
 
-Details about HAB and encrypted boot process can be found in application
-notes AN4581[1] and AN12056[2] and in the introduction_habv4.txt document.
-
-Before continuing, be sure to have fatwrite and dek_blob commands
-available in U-Boot. If not, enable them in Kconfig and rebuild
+在继续之前，确保U-Boot中的fatwrite和dek_blob命令可用。如果没有，在Kconfig中启用它们并重编译
 U-Boot:
 
 - Defconfig
@@ -30,16 +23,10 @@ U-Boot:
   ARM architecture -> Support the 'dek_blob' command
   ARM architecture -> Support the set_priblob_bitfield command
 
-1.1 Building an encrypted U-Boot image
+1.1 建立一个加密的U-Boot镜像
 --------------------------------------
 
-This U-Boot is built the same way the one from the secure document is,
-so it provides the same access the the HAB APIs, extra functions
-for HAB, etc...
-
-However, the layout of the new image is different, as a part of it is
-encrypted, and a DEK blob is appended at the end. The diagram below
-illustrates an encrypted u-boot-dtb.imx image layout:
+然而，新镜像的布局是不同的，因为它的一部分被加密了，并且在最后附加了一个DEK blob。下图说明了一个加密的u-boot-dtb.imx镜像的布局:
 
   ----------------------- +-----------------------------+ <--- *start
          ^            ^   |      Image Vector Table     |
@@ -70,19 +57,13 @@ illustrates an encrypted u-boot-dtb.imx image layout:
                           |           Padding           |
                           +-----------------------------+
 
-1.2 Get a secure boot working
+1.2 确保secure boot工作正常
 -----------------------------
 
-You need to go through all the steps described into the
-mx6_mx7_secure_boot.txt guide, and get a signed U-Boot which can
-boot successfully on a closed target. Otherwise, the following
-steps will not work.
+你需要通过所有在 mx6_mx7_secure_boot.txt指南中描述的步骤，并得到一个有签名的U-Boot，它可以在一个封闭的目标上成功启动。否则下面的步骤将无法工作。
 
-1.3 Compile the CST to enable the encrypting feature
+1.3 编译CST以启用加密功能
 ----------------------------------------------------
-
-The encrypting feature is not enabled by default. You need to
-execute the following commands to enable it:
 
   $ sudo apt-get install libssl-dev openssl
   $ cd <CST install directory>/code/back_end/src
@@ -90,7 +71,7 @@ execute the following commands to enable it:
     -lfrontend -lcrypto
   $ cp cst_encrypted ../../../<where your original CST executable is>
 
-1.4 Creating the CSF description files
+1.4 创建CSF描述文件
 --------------------------------------
 
 The CSF contains all the commands that the ROM executes during the
@@ -100,14 +81,13 @@ of the image to authenticate, which keys to install, use, etc...
 CSF examples for encrypted boot are available under
 doc/imx/hab/habv4/csf_examples/ directory.
 
-For both CSF, first part is same compared to the CSF used for
-the secure boot step.
-Here we describe how to encrypt the U-Boot image and then sign it.
+对于这两种CSF来说，与用于安全启动步骤的CSF相比，第一部分是相同的。
+在这里，我们描述了如何对U-Boot镜像进行加密，然后对其进行签名。
 
 1.4.1 csf_u-boot_enc.txt
 -------------------------
 
-第一部分的 CSF 是用来生成dek.bin和加密uboot的.Authenticate Data必须修改，而且加了两个新命令:
+第一部分的CSF是用来生成dek.bin和加密uboot的.Authenticate Data必须修改，而且加了两个新命令:
 
 - Modify the Authenticate Data command to only cover IVT and DCD:
 
